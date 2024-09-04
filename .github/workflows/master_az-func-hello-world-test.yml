@@ -34,26 +34,11 @@ jobs:
           npm run test --if-present
           popd
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: az-func-hello-world-test
-          path: .
-
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: az-func-hello-world-test
+      # - name: Upload artifact for deployment job
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: az-func-hello-world-test
+      #     path: .
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -69,4 +54,34 @@ jobs:
           app-name: 'az-func-hello-world-test'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+
+  # deploy:
+  #   runs-on: windows-latest
+  #   needs: build
+  #   environment:
+  #     name: 'Production'
+  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  #   permissions:
+  #     id-token: write #This is required for requesting the JWT
+
+  #   steps:
+  #     - name: Download artifact from build job
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: az-func-hello-world-test
+      
+  #     - name: Login to Azure
+  #       uses: azure/login@v2
+  #       with:
+  #         client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BBC26EC494E344E39B417C61CBB26209 }}
+  #         tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2418BF4384304423B4347D90DE6390A4 }}
+  #         subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FED811060067414FA57F77C01530DF70 }}
+
+  #     - name: 'Run Azure Functions Action'
+  #       uses: Azure/functions-action@v1
+  #       id: fa
+  #       with:
+  #         app-name: 'az-func-hello-world-test'
+  #         slot-name: 'Production'
+  #         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           
